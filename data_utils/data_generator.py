@@ -89,13 +89,13 @@ def create_coco(label_encoder, batch_size):
     (train_ds, val_ds), info = tfds.load(
         'coco/2017', split=['train', 'validation'], with_info=True, shuffle_files=True)
 
-    # train_ds = (train_ds.map(filter_ds, num_parallel_calls=tf.data.AUTOTUNE)
-    #             .filter(lambda info, valid: valid)
-    #             .map(lambda info, valid: info))
-    #
-    # val_ds = (val_ds.map(filter_ds, num_parallel_calls=tf.data.AUTOTUNE)
-    #           .filter(lambda info, valid: valid)
-    #           .map(lambda info, valid: info))
+    train_ds = (train_ds.map(filter_ds, num_parallel_calls=tf.data.AUTOTUNE)
+                .filter(lambda info, valid: valid)
+                .map(lambda info, valid: info))
+
+    val_ds = (val_ds.map(filter_ds, num_parallel_calls=tf.data.AUTOTUNE)
+              .filter(lambda info, valid: valid)
+              .map(lambda info, valid: info))
     train_ds = (train_ds.shuffle(512, reshuffle_each_iteration=True)
                 .map(lambda info: preprocess_image(info, True), num_parallel_calls=tf.data.AUTOTUNE)
                 .batch(batch_size)

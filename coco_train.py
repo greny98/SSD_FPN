@@ -12,9 +12,7 @@ from models.ssd import create_ssd_model
 def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument('--batch_size', type=int, default=6)
-    parser.add_argument('--epochs', type=int, default=50)
-    parser.add_argument('--kaggle_dir', type=str, default='data/kaggle_mask')
-    parser.add_argument('--medical_dir', type=str, default='data/medical_mask')
+    parser.add_argument('--epochs', type=int, default=100)
     parser.add_argument('--lr', type=float, default=1e-4)
     parser.add_argument('--output_dir', type=str, default='ckpt')
     parser.add_argument('--log_dir', type=str, default='logs')
@@ -49,7 +47,9 @@ if __name__ == '__main__':
     # Tensorboard
     tensorboard_cb = callbacks.TensorBoard(log_dir=args['log_dir'])
     # Train
-    ssd_model.fit(train_ds,
-                  validation_data=val_ds,
+    n_train_steps = math.ceil(117266 / args["batch_size"])
+    n_val_steps = math.ceil(4952 / args["batch_size"])
+    ssd_model.fit(train_ds, steps_per_epoch=n_train_steps,
+                  validation_data=val_ds, validation_steps=n_val_steps,
                   callbacks=[ckpt_cb, lr_schedule_cb, tensorboard_cb],
                   epochs=args['epochs'])
