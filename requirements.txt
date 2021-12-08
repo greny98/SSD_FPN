@@ -1,0 +1,6 @@
+numpy
+pandas
+opencv-python
+tensorflow
+tensorflow_datasets
+albumentations
