@@ -33,6 +33,7 @@ if __name__ == '__main__':
     train_ds, val_ds = create_coco(label_encoder, batch_size=args["batch_size"])
     # Create Model
     ssd_model = create_ssd_model(80)
+    # ssd_model.load_weights("/content/drive/MyDrive/COCO_Object_Detection/ckpt/coco/checkpoint")
     loss_fn = RetinaNetLoss(num_classes=80)
     ssd_model.compile(
         loss=loss_fn,

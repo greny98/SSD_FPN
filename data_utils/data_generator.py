@@ -8,15 +8,15 @@ from configs.common_config import IMAGE_SIZE
 def detect_augmentation(label_encoder, training):
     if training:
         transform = augment.Compose([
+            augment.LongestMaxSize(320),
             augment.ImageCompression(quality_lower=75, quality_upper=100),
-            augment.LongestMaxSize(400),
             augment.HorizontalFlip(p=0.3),
-            augment.VerticalFlip(p=0.3),
-            augment.RandomRotate90(p=0.3),
+            # augment.VerticalFlip(p=0.3),
+            # augment.RandomRotate90(p=0.3),
             augment.RandomBrightnessContrast(0.3, 0.3, p=0.3),
-            augment.ShiftScaleRotate(shift_limit=0.01, scale_limit=0.01, rotate_limit=10, p=0.4),
-            augment.GaussNoise(p=0.3),
-            augment.GaussianBlur(p=0.4),
+            # augment.ShiftScaleRotate(shift_limit=0.01, scale_limit=0.01, rotate_limit=10, p=0.4),
+            # augment.GaussNoise(p=0.3),
+            # augment.GaussianBlur(p=0.4),
             augment.RandomSizedBBoxSafeCrop(IMAGE_SIZE, IMAGE_SIZE, p=0.5),
             augment.Resize(IMAGE_SIZE, IMAGE_SIZE),
         ], bbox_params=augment.BboxParams(format='pascal_voc'))
@@ -89,10 +89,12 @@ def create_coco(label_encoder, batch_size):
     (train_ds, val_ds), info = tfds.load(
         'coco/2017', split=['train', 'validation'], with_info=True, shuffle_files=True)
 
+    train_ds = train_ds.repeat()
     train_ds = (train_ds.map(filter_ds, num_parallel_calls=tf.data.AUTOTUNE)
                 .filter(lambda info, valid: valid)
                 .map(lambda info, valid: info))
 
+    val_ds = val_ds.repeat()
     val_ds = (val_ds.map(filter_ds, num_parallel_calls=tf.data.AUTOTUNE)
               .filter(lambda info, valid: valid)
               .map(lambda info, valid: info))
